@@ -1,9 +1,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Emerson's Bolus Calculator</title>
-    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Bolus Calculator">
@@ -11,74 +10,65 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #f8f9fa;
         }
         .container {
-            max-width: 600px;
+            width: 90%;
+            max-width: 400px;
             margin: auto;
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 20px;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            font-size: 14px;
         }
         input, select, button {
-            width: calc(100% - 20px); /* Ensure consistent width */
+            width: 100%;
             padding: 10px;
-            font-size: 16px;
+            font-size: 14px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            margin: auto;
         }
         button {
             background-color: #007bff;
             color: white;
             cursor: pointer;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #0056b3;
         }
         .result {
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 15px;
+            font-size: 16px;
             font-weight: bold;
             text-align: center;
         }
         .calculations {
             display: none;
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 10px;
+            font-size: 12px;
             color: #555;
             background: #f1f1f1;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
     </style>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker registered:', registration);
-                })
-                .catch(error => {
-                    console.log('Service Worker registration failed:', error);
-                });
-            });
-        }
-    </script>
 </head>
 <body>
     <div class="container">
@@ -126,8 +116,34 @@
         </div>
         <button onclick="calculateBolus()">Calculate Bolus</button>
         <div class="result" id="result"></div>
-        <a href="#" onclick="toggleCalculations()" style="display:block; text-align:center; margin-top:15px; font-size:14px;">Show me the Math</a>
+        <a href="#" onclick="toggleCalculations()" style="display:block; text-align:center; margin-top:10px; font-size:12px;">Show me the Math</a>
         <div class="calculations" id="calculations"></div>
     </div>
+
+    <script>
+        function calculateBolus() {
+            const currentBloodGlucose = parseFloat(document.getElementById('currentBloodGlucose').value);
+            const carbs = parseFloat(document.getElementById('carbs').value);
+            const targetBloodGlucose = parseFloat(document.getElementById('targetBloodGlucose').value);
+            const cf = parseFloat(document.getElementById('cf').value);
+            const icr = parseFloat(document.getElementById('icr').value);
+
+            if (isNaN(currentBloodGlucose) || isNaN(carbs)) {
+                document.getElementById('result').innerText = 'Please enter valid values for Current Blood Glucose and Carbs.';
+                return;
+            }
+
+            const carbBolus = carbs / icr;
+            const correctionBolus = cf > 0 ? (currentBloodGlucose - targetBloodGlucose) / cf : 0;
+            const totalBolus = carbBolus + correctionBolus;
+            const roundedBolus = Math.round(totalBolus * 2) / 2;
+
+            if (roundedBolus <= 0) {
+                document.getElementById('result').innerText = 'No insulin bolus is needed.';
+            } else {
+                document.getElementById('result').innerText = `Total Bolus: ${totalBolus.toFixed(2)} units\nRounded Total Bolus: ${roundedBolus.toFixed(1)} units`;
+            }
+        }
+    </script>
 </body>
 </html>
