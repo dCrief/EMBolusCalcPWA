@@ -1,4 +1,4 @@
-<html lang="en">
+  <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -75,11 +75,11 @@
         <h1>Emerson's Bolus Calculator</h1>
         <div class="form-group">
             <label for="currentBloodGlucose">Current Blood Glucose (mg/dL)</label>
-            <input type="number" inputmode="numeric" pattern="[0-9]*" id="currentBloodGlucose" min="0" max="800" required>
+            <input type="number" inputmode="numeric" pattern="[0-9]*" id="currentBloodGlucose" min="30" max="700" required>
         </div>
         <div class="form-group">
             <label for="carbs">Carbs in Meal (grams)</label>
-            <input type="number" inputmode="numeric" pattern="[0-9]*" id="carbs" min="0" required>
+            <input type="number" inputmode="numeric" pattern="[0-9]*" id="carbs" min="0" max="150" required>
         </div>
         <div class="form-group">
             <label for="targetBloodGlucose">Target Blood Glucose (mg/dL)</label>
