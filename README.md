@@ -145,5 +145,61 @@
             }
         }
     </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+            });
+        }
+
+        function toggleCalculations() {
+            const calculationsDiv = document.getElementById('calculations');
+            if (calculationsDiv.style.display === 'none' || calculationsDiv.style.display === '') {
+                calculationsDiv.style.display = 'block';
+            } else {
+                calculationsDiv.style.display = 'none';
+            }
+        }
+
+        function calculateBolus() {
+            const currentBloodGlucose = parseFloat(document.getElementById('currentBloodGlucose').value);
+            const carbs = parseFloat(document.getElementById('carbs').value);
+            const targetBloodGlucose = parseFloat(document.getElementById('targetBloodGlucose').value);
+            const cf = parseFloat(document.getElementById('cf').value);
+            const icr = parseFloat(document.getElementById('icr').value);
+
+            if (isNaN(currentBloodGlucose) || isNaN(carbs)) {
+                document.getElementById('result').innerText = 'Please enter valid values for Current Blood Glucose and Carbs.';
+                return;
+            }
+
+            const carbBolus = carbs / icr;
+            const correctionBolus = cf > 0 ? (currentBloodGlucose - targetBloodGlucose) / cf : 0;
+            const totalBolus = carbBolus + correctionBolus;
+            const roundedBolus = Math.round(totalBolus * 2) / 2;
+
+            if (roundedBolus <= 0) {
+                document.getElementById('result').innerText = 'No insulin bolus is needed.';
+            } else {
+                document.getElementById('result').innerText = `Total Bolus: ${totalBolus.toFixed(2)} units
+Rounded Total Bolus: ${roundedBolus.toFixed(1)} units`;
+            }
+
+            const calculations = `Carb Bolus Calculation: (Carbs in Meal / ICR) = (${carbs} / ${icr}) = ${carbBolus.toFixed(2)} units
+
+Correction Bolus Calculation: (Current Blood Glucose - Target Blood Glucose) / CF = (${currentBloodGlucose} - ${targetBloodGlucose}) / ${cf} = ${correctionBolus.toFixed(2)} units
+
+Total Bolus: ${totalBolus.toFixed(2)} units
+Rounded Total Bolus: ${roundedBolus.toFixed(1)} units`;
+            document.getElementById('calculations').innerText = calculations;
+        }
+    </script>
 </body>
 </html>
